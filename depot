@@ -31,9 +31,9 @@ if not flag_pot and not target then
 	return 1
 end
 
-local gt = require"depotlib"
+local depot = require"depotlib"
 
-local source_data = gt.decode_file(source)
+local source_data = depot.decode_file(source)
 local indexed_source_data = {}
 for _,v in pairs(source_data) do
 	indexed_source_data[v.id] = v.str
@@ -45,7 +45,7 @@ if flag_pot then
 		table.insert(data,{id=i,str="",comment=v})
 	end
 else
-	local target_data = gt.decode_file(target)
+	local target_data = depot.decode_file(target)
 	local indexed_target_data = {}
 	for _,v in pairs(target_data) do
 		indexed_target_data[v.id] = v.str
@@ -57,5 +57,5 @@ else
 	end
 end
 
-local raw = gt.encode(data)
+local raw = depot.encode(data)
 print(raw)
