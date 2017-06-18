@@ -1,0 +1,61 @@
+#!/usr/bin/lua
+
+local source,target,flag_pot
+for i,a in pairs(arg) do
+	if i < 1 then
+		--nop
+	elseif a == "--pot" then
+		flag_pot = true
+	elseif not source then
+		source = a
+	elseif not target then
+		target = a
+	end
+end
+
+target = target or source
+
+function man()
+	print("depot: usage: depot [--pot] <source> [target]")
+end
+
+if not source then
+	man()
+	print("Error: No source file defined.")
+	return 1
+end
+
+if not flag_pot and not target then
+	man()
+	print("Error: No target file defined.")
+	return 1
+end
+
+local gt = require"depotlib"
+
+local source_data = gt.decode_file(source)
+local indexed_source_data = {}
+for _,v in pairs(source_data) do
+	indexed_source_data[v.id] = v.str
+end
+
+data = {}
+if flag_pot then
+	for i,v in pairs(indexed_source_data) do
+		table.insert(data,{id=i,str="",comment=v})
+	end
+else
+	local target_data = gt.decode_file(target)
+	local indexed_target_data = {}
+	for _,v in pairs(target_data) do
+		indexed_target_data[v.id] = v.str
+	end
+
+	for i,v in pairs(indexed_source_data) do
+		local target_str = indexed_target_data[i]
+		table.insert(data,{id=i,str=target_str,comment=v})
+	end
+end
+
+local raw = gt.encode(data)
+print(raw)
